@@ -38,11 +38,21 @@ EduPredict helps higher education leadership make data-driven decisions about la
 
 ##  Outputs
 
-- **Enrollment Projection:** 3-year forecast with Year 1, 2, 3 breakdown
+- **Enrollment Projection:** 3-year forecast with **prediction intervals** (e.g., "40 students, range: 15-65")
+- **Confidence Score:** 0-100% with risk level (low/medium/high)
+- **Warning Flags:** Model tells you when it's uncertain
 - **3-Year Pool:** Total projected candidate pool
-- **ROI Ratio:** Return on investment calculation
+- **ROI Ratio:** Return on investment with financial risk assessment
 - **Workforce Outlook:** Job growth, demand level, salary data
-- **Recommendation:** STRONG GO / GO / CONDITIONAL / RECONSIDER
+- **Recommendation:** STRONG GO / GO / CONDITIONAL / RECONSIDER / **DO NOT LAUNCH**
+
+##  Key Feature: Honest Predictions
+
+Unlike typical forecasting tools, EduPredict **admits when it's uncertain**:
+- Shows prediction ranges, not just point estimates
+- Flags scenarios with low confidence
+- Tells you "DO NOT LAUNCH" when ROI is poor
+- Explains why predictions are risky
 
 ---
 
@@ -56,12 +66,26 @@ EduPredict helps higher education leadership make data-driven decisions about la
 
 ---
 
-##  Running Locally
+##  Run from GitHub (No Installation Required)
+
+### Option 1: GitHub Codespaces (Recommended - Runs in Browser)
+
+1. Go to your repo: `https://github.com/GaneshMunagala714/Edupredict-Pro`
+2. Click the ** green "<> Code" button**
+3. Select **"Codespaces"** tab
+4. Click **"Create codespace on main"**
+5. Wait 1-2 minutes for setup
+6. The app auto-starts at port 8501
+7. Click **"Open in Browser"** when prompted
+
+✅ **Done!** The app runs entirely in GitHub's cloud - no local setup needed.
+
+### Option 2: Run Locally
 
 ```bash
 # Clone the repository
-git clone https://github.com/GaneshMunagala714/Edupredict.git
-cd Edupredict
+git clone https://github.com/GaneshMunagala714/Edupredict-Pro.git
+cd Edupredict-Pro
 
 # Install dependencies
 pip install -r requirements.txt
@@ -91,10 +115,14 @@ The app will open at `http://localhost:8501`
 **Test Scenario:** MS in AI + International + FA26 + Baseline + CT
 
 **Expected Output:**
-- Year 1: 40 students
+- Year 1: 40 students (range: ~15-65)
+- Confidence: ~65% (Moderate)
 - 3-Year Pool: 131 students
 - ROI: 3.43x
 - Recommendation: **STRONG GO**
+
+**Low Confidence Test:** BS in AI + Domestic + SP27 + Optimistic + CT
+- Should show: Confidence < 55%, Warning flags, CAUTION recommendation
 
 ---
 
