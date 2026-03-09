@@ -14,9 +14,9 @@ A professional dashboard for College Deans to evaluate launching AI degree progr
 
 | Platform | Link |
 |----------|------|
-| **Streamlit Cloud** | [Launch App](https://edupredict-pro.streamlit.app) |
+| **AWS EC2** | Deployed on AWS (see [Deployment Guide](AWS-DEPLOY.md)) |
 | **GitHub Codespaces** | [Open in Codespaces](https://github.com/codespaces/new?repo=GaneshMunagala714%2FEdupredict-Pro) |
-| **AWS EC2** | [Deployment Guide](AWS-DEPLOY.md) |
+| **GitHub Pages** | [Landing Page](https://ganeshmunagala714.github.io/Edupredict-Pro) |
 
 ---
 
@@ -98,28 +98,20 @@ Opens at `http://localhost:8501`
 
 ## Deploy
 
-### Option 1: Streamlit Cloud (Recommended -- Free & Permanent)
-
-1. Fork or push this repo to your GitHub
-2. Go to [share.streamlit.io](https://share.streamlit.io)
-3. Connect your GitHub account
-4. Select repo: `Edupredict-Pro`, branch: `main`, file: `ui/app.py`
-5. Click Deploy
-
-### Option 2: AWS EC2 (Student Account)
+### Option 1: AWS EC2 (Primary Deployment)
 
 See [AWS-DEPLOY.md](AWS-DEPLOY.md) for the full step-by-step guide.
 
-Quick version: Launch a t2.micro, paste the user-data script, open port 8501. App auto-deploys in ~3 minutes.
+Quick version: Launch a t2.micro Ubuntu instance, paste the user-data script, open port 8501. App auto-deploys in ~3 minutes. No SSH required.
 
-### Option 3: Docker
+### Option 2: Docker
 
 ```bash
 docker build -t edupredict-pro .
 docker run -p 8501:8501 edupredict-pro
 ```
 
-### Option 4: GitHub Codespaces
+### Option 3: GitHub Codespaces
 
 Click "Create codespace on main" from the repo page. The app auto-starts.
 
