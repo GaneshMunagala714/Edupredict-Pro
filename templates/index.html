@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPredict Pro | AI Degree Program Planning</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+            min-height: 100vh;
+            color: #831843;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            padding: 1rem 2rem;
+            border-bottom: 2px solid #fbcfe8;
+            box-shadow: 0 2px 10px rgba(236, 72, 153, 0.1);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .version {
+            font-size: 0.875rem;
+            color: #9d174d;
+            font-weight: 600;
+        }
+
+        /* Main Layout */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 20px;
+            border: 2px solid #fbcfe8;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.1);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #831843;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #ec4899;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #9d174d;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #fbcfe8;
+            border-radius: 12px;
+            font-size: 1rem;
+            color: #831843;
+            background: #fdf2f8;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .form-select:hover, .form-select:focus {
+            border-color: #ec4899;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+        }
+
+        /* Button */
+        .btn-primary {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+            border: 2px solid #f9a8d4;
+            border-radius: 16px;
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #be185d;
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #9d174d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-delta {
+            font-size: 0.875rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
+        /* Charts */
+        .chart-container {
+            background: white;
+            border-radius: 16px;
+            border: 2px solid #fbcfe8;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            min-height: 400px;
+        }
+
+        .chart-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #831843;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        /* Recommendations */
+        .rec-badge {
+            padding: 1rem 1.5rem;
+            border-radius: 16px;
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .rec-strong-go {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .rec-go {
+            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+            color: white;
+        }
+
+        .rec-conditional {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+
+        .rec-reconsider {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .rec-do-not-launch {
+            background: linear-gradient(135deg, #7c2d12 0%, #991b1b 100%);
+            color: white;
+            border: 3px solid #fecaca;
+        }
+
+        /* Info Boxes */
+        .info-box {
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+            border: 2px solid #f9a8d4;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .info-label {
+            color: #9d174d;
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: #831843;
+            font-weight: 700;
+        }
+
+        /* Warnings */
+        .warning-box {
+            background: #fef2f2;
+            border: 2px solid #fecaca;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .warning-title {
+            color: #dc2626;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .warning-text {
+            color: #991b1b;
+            font-size: 0.875rem;
+        }
+
+        .warning-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: #7f1d1d;
+        }
+
+        /* Opportunities */
+        .opportunity-box {
+            background: #f0fdf4;
+            border: 2px solid #bbf7d0;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .opportunity-title {
+            color: #16a34a;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Summary Card */
+        .summary-card {
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+            border: 2px solid #ec4899;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .summary-title {
+            text-align: center;
+            color: #831843;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .summary-metric {
+            background: white;
+            border-radius: 8px;
+            padding: 0.75rem;
+            text-align: center;
+        }
+
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ec4899;
+        }
+
+        .summary-label {
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #9d174d;
+        }
+
+        .spinner {
+            border: 4px solid #fce7f3;
+            border-top: 4px solid #ec4899;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Hidden initially */
+        .results-section {
+            display: none;
+        }
+
+        .results-section.active {
+            display: block;
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        .data-table th {
+            background: #fdf2f8;
+            color: #831843;
+            font-weight: 700;
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 2px solid #f9a8d4;
+        }
+
+        .data-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #fce7f3;
+            color: #9d174d;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #9d174d;
+            font-size: 0.875rem;
+        }
+
+        /* About Section */
+        .about-text {
+            font-size: 0.875rem;
+            color: #9d174d;
+            line-height: 1.6;
+        }
+
+        .about-text strong {
+            color: #831843;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">🎓 EduPredict Pro</div>
+            <div class="version">v2.1 | AI Degree Planning</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- LEFT PANEL: Inputs -->
+        <div class="left-panel">
+            <div class="card">
+                <div class="card-title">📋 Input Parameters</div>
+                
+                <div class="form-group">
+                    <label class="form-label">Program Type</label>
+                    <select class="form-select" id="program">
+                        {% for p in programs %}
+                        <option value="{{ p }}">{{ p }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Student Type</label>
+                    <select class="form-select" id="student_type">
+                        {% for s in student_types %}
+                        <option value="{{ s }}">{{ s }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Academic Term</label>
+                    <select class="form-select" id="term">
+                        <option value="FA26">FA26 (Fall 2026)</option>
+                        <option value="SP27">SP27 (Spring 2027)</option>
+                        <option value="FA28">FA28 (Fall 2028)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Scenario</label>
+                    <select class="form-select" id="scenario">
+                        {% for s in scenarios %}
+                        <option value="{{ s }}">{{ s }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Target State</label>
+                    <select class="form-select" id="state">
+                        <option value="CT">CT - Connecticut</option>
+                        <option value="NY">NY - New York</option>
+                        <option value="MA">MA - Massachusetts</option>
+                    </select>
+                </div>
+
+                <button class="btn-primary" id="generate-btn" onclick="generateForecast()">
+                    🚀 Generate Forecast
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="card-title">ℹ️ About This Tool</div>
+                <div class="about-text">
+                    <p><strong>EduPredict Pro</strong> helps College Deans make data-driven decisions about launching AI degree programs.</p>
+                    <br>
+                    <p><strong>Features:</strong></p>
+                    <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+                        <li>3-year enrollment forecasting</li>
+                        <li>AI labor market analysis</li>
+                        <li>ROI calculations with risk flags</li>
+                        <li>Honest GO/NO-GO recommendations</li>
+                    </ul>
+                    <br>
+                    <p><strong>Data:</strong> BLS 2023, Anthropic Economic Index 2026, IPEDS 2023-2024</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CENTER PANEL: Results -->
+        <div class="center-panel">
+            <div id="loading" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Generating forecast...</p>
+            </div>
+
+            <div id="welcome" class="card">
+                <div style="text-align: center; padding: 3rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
+                    <h2 style="color: #831843; margin-bottom: 1rem;">Welcome to EduPredict Pro</h2>
+                    <p style="color: #9d174d; margin-bottom: 2rem;">Select your inputs on the left and click "Generate Forecast" to see enrollment projections, ROI analysis, and AI labor market insights.</p>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; max-width: 500px; margin: 0 auto;">
+                        <div style="background: #fdf2f8; padding: 1rem; border-radius: 12px;">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🎯</div>
+                            <div style="font-weight: 600; color: #831843;">162 Validated Combinations</div>
+                        </div>
+                        <div style="background: #fdf2f8; padding: 1rem; border-radius: 12px;">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🤖</div>
+                            <div style="font-weight: 600; color: #831843;">Anthropic 2026 Data</div>
+                        </div>
+                        <div style="background: #fdf2f8; padding: 1rem; border-radius: 12px;">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📈</div>
+                            <div style="font-weight: 600; color: #831843;">3D Visualizations</div>
+                        </div>
+                        <div style="background: #fdf2f8; padding: 1rem; border-radius: 12px;">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">💰</div>
+                            <div style="font-weight: 600; color: #831843;">ROI Analysis</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="results" class="results-section">
+                <!-- Metrics -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-value" id="metric-year1">-</div>
+                        <div class="metric-label">Year 1 Students</div>
+                        <div class="metric-delta" id="metric-year1-range">-</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="metric-pool">-</div>
+                        <div class="metric-label">3-Year Pool</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="metric-confidence">-</div>
+                        <div class="metric-label">Confidence</div>
+                        <div class="metric-delta" id="metric-risk">-</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="metric-roi">-</div>
+                        <div class="metric-label">ROI Ratio</div>
+                    </div>
+                </div>
+
+                <!-- Enrollment Chart -->
+                <div class="chart-container">
+                    <div class="chart-title">📈 Enrollment Projection (3 Years)</div>
+                    <div id="enrollment-chart" style="height: 350px;"></div>
+                </div>
+
+                <!-- Warnings -->
+                <div id="warnings-section" style="display: none;">
+                    <div class="warning-box">
+                        <div class="warning-title">⚠️ Warning Flags</div>
+                        <div id="warnings-list"></div>
+                    </div>
+                </div>
+
+                <!-- ROI Chart -->
+                <div class="chart-container">
+                    <div class="chart-title">💰 Financial Analysis</div>
+                    <div id="roi-chart" style="height: 300px;"></div>
+                </div>
+
+                <!-- 3D Analysis -->
+                <div class="chart-container">
+                    <div class="chart-title">🔮 Scenario Comparison (All Scenarios)</div>
+                    <div id="scenario-chart" style="height: 400px;"></div>
+                </div>
+
+                <!-- State Comparison -->
+                <div class="chart-container">
+                    <div class="chart-title">🗺️ State Comparison (CT vs NY vs MA)</div>
+                    <div id="state-chart" style="height: 400px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL: Summary -->
+        <div class="right-panel">
+            <div id="summary-results" class="results-section">
+                <div class="card">
+                    <div class="card-title">🎯 Recommendation</div>
+                    <div id="recommendation-badge" class="rec-badge rec-go">-</div>
+                    <div id="recommendation-rationale" style="font-size: 0.875rem; color: #666; text-align: center;">-</div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-title">📋 Executive Summary</div>
+                    <div class="summary-grid">
+                        <div class="summary-metric">
+                            <div class="summary-value" id="summary-year1">-</div>
+                            <div class="summary-label">Year 1</div>
+                        </div>
+                        <div class="summary-metric">
+                            <div class="summary-value" id="summary-pool">-</div>
+                            <div class="summary-label">Pool</div>
+                        </div>
+                        <div class="summary-metric">
+                            <div class="summary-value" id="summary-roi">-</div>
+                            <div class="summary-label">ROI</div>
+                        </div>
+                    </div>
+                    <div id="summary-details" style="font-size: 0.875rem; color: #9d174d;">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">💼 Workforce Outlook</div>
+                    <div class="info-box">
+                        <div class="info-row">
+                            <span class="info-label">Demand Score:</span>
+                            <span class="info-value" id="job-demand-score">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">5-Year Growth:</span>
+                            <span class="info-value" id="job-growth">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Open Positions:</span>
+                            <span class="info-value" id="job-openings">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Demand Level:</span>
+                            <span class="info-value" id="job-demand-level">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">🤖 AI Exposure Analysis</div>
+                    <div class="info-box">
+                        <div class="info-row">
+                            <span class="info-label">Observed Exposure:</span>
+                            <span class="info-value" id="ai-exposure">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Risk Level:</span>
+                            <span class="info-value" id="ai-risk">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Coverage Gap:</span>
+                            <span class="info-value" id="ai-gap">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">BLS Impact:</span>
+                            <span class="info-value" id="ai-bls">-</span>
+                        </div>
+                    </div>
+                    <div id="ai-finding" style="font-size: 0.8rem; color: #9d174d; margin-top: 0.5rem; font-style: italic;">
+                        <!-- Key finding -->
+                    </div>
+                </div>
+
+                <div id="opportunities-section" style="display: none;">
+                    <div class="opportunity-box">
+                        <div class="opportunity-title">✓ Opportunities</div>
+                        <div id="opportunities-list"></div>
+                    </div>
+                </div>
+
+                <div id="hiring-warning-section" style="display: none;">
+                    <div class="warning-box">
+                        <div class="warning-title">⚠️ Hiring Alert</div>
+                        <div id="hiring-warning-text"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p><strong>EduPredict Pro</strong> | Built with Flask & Plotly.js | Data: BLS 2023, Anthropic 2026, IPEDS 2023-2024</p>
+        <p style="margin-top: 0.5rem; font-size: 0.75rem;">Hosted on AWS EC2 | <a href="https://github.com/GaneshMunagala714/Edupredict-Pro" target="_blank" style="color: #ec4899;">View on GitHub</a></p>
+    </footer>
+
+    <script>
+        // Generate forecast
+        async function generateForecast() {
+            const btn = document.getElementById('generate-btn');
+            const loading = document.getElementById('loading');
+            const welcome = document.getElementById('welcome');
+            const results = document.getElementById('results');
+            const summaryResults = document.getElementById('summary-results');
+
+            // Get inputs
+            const inputs = {
+                program: document.getElementById('program').value,
+                student_type: document.getElementById('student_type').value,
+                term: document.getElementById('term').value,
+                scenario: document.getElementById('scenario').value,
+                state: document.getElementById('state').value
+            };
+
+            // Show loading
+            btn.disabled = true;
+            welcome.style.display = 'none';
+            loading.style.display = 'block';
+            results.classList.remove('active');
+            summaryResults.classList.remove('active');
+
+            try {
+                // Call API
+                const response = await fetch('/api/forecast', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(inputs)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayResults(data);
+                    results.classList.add('active');
+                    summaryResults.classList.add('active');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error generating forecast. Please try again.');
+            } finally {
+                loading.style.display = 'none';
+                btn.disabled = false;
+            }
+        }
+
+        // Display results
+        function displayResults(data) {
+            const f = data.forecast;
+            const r = data.roi;
+            const j = data.job_market;
+            const rec = data.recommendation;
+
+            // Metrics
+            document.getElementById('metric-year1').textContent = f.year1;
+            document.getElementById('metric-year1-range').textContent = `Range: ${f.year1_low}-${f.year1_high}`;
+            document.getElementById('metric-pool').textContent = f.pool;
+            document.getElementById('metric-confidence').textContent = f.confidence_pct + '%';
+            document.getElementById('metric-risk').textContent = f.risk_level.toUpperCase();
+            document.getElementById('metric-roi').textContent = r.ratio.toFixed(2) + 'x';
+
+            // Summary
+            document.getElementById('recommendation-badge').textContent = rec.text;
+            document.getElementById('recommendation-badge').className = 'rec-badge rec-' + rec.class;
+            document.getElementById('recommendation-rationale').textContent = rec.rationale;
+
+            document.getElementById('summary-year1').textContent = f.year1;
+            document.getElementById('summary-pool').textContent = f.pool;
+            document.getElementById('summary-roi').textContent = r.ratio.toFixed(2) + 'x';
+
+            document.getElementById('summary-details').innerHTML = `
+                <strong>${data.inputs.program}</strong><br>
+                ${data.inputs.student_type} Students<br>
+                Launch: ${data.inputs.term}<br>
+                Location: ${data.inputs.state}<br>
+                Scenario: ${data.inputs.scenario}
+            `;
+
+            // Job market
+            document.getElementById('job-demand-score').textContent = j.demand_score + '/100';
+            document.getElementById('job-growth').textContent = j.growth_rate + '%';
+            document.getElementById('job-openings').textContent = '~' + j.open_positions.toLocaleString();
+            document.getElementById('job-demand-level').textContent = j.demand_level;
+
+            // AI Exposure
+            document.getElementById('ai-exposure').textContent = j.ai_exposure_pct + '%';
+            document.getElementById('ai-risk').textContent = j.risk_level.toUpperCase();
+            document.getElementById('ai-gap').textContent = Math.round(j.coverage_gap * 100) + '%';
+            document.getElementById('ai-bls').textContent = j.bls_impact.toFixed(1) + 'pp';
+            document.getElementById('ai-finding').textContent = j.key_finding;
+
+            // Warnings
+            const warningsSection = document.getElementById('warnings-section');
+            if (f.warning_flags && f.warning_flags.length > 0) {
+                warningsSection.style.display = 'block';
+                document.getElementById('warnings-list').innerHTML = f.warning_flags.map(w => 
+                    `<div class="warning-item">• ${w}</div>`
+                ).join('');
+            } else {
+                warningsSection.style.display = 'none';
+            }
+
+            // Opportunities
+            const oppSection = document.getElementById('opportunities-section');
+            if (rec.opportunities && rec.opportunities.length > 0) {
+                oppSection.style.display = 'block';
+                document.getElementById('opportunities-list').innerHTML = rec.opportunities.map(o => 
+                    `<div style="font-size: 0.875rem; color: #16a34a; margin-bottom: 0.25rem;">✓ ${o}</div>`
+                ).join('');
+            } else {
+                oppSection.style.display = 'none';
+            }
+
+            // Hiring warning
+            const hiringSection = document.getElementById('hiring-warning-section');
+            if (j.young_worker_impact < -0.10) {
+                hiringSection.style.display = 'block';
+                document.getElementById('hiring-warning-text').innerHTML = `
+                    <div class="warning-text">
+                        Anthropic 2026 research shows a <strong>${Math.abs(Math.round(j.young_worker_impact * 100))}% drop</strong> 
+                        in hiring for workers aged 22-25 in this field. Consider targeting experienced professionals 
+                        or emphasizing unique human skills in curriculum.
+                    </div>
+                `;
+            } else {
+                hiringSection.style.display = 'none';
+            }
+
+            // Charts
+            renderEnrollmentChart(f, data.inputs);
+            renderROIChart(r);
+            renderScenariosChart(data.inputs);
+            renderStatesChart(data.inputs);
+        }
+
+        // Enrollment chart
+        function renderEnrollmentChart(forecast, inputs) {
+            const trace = {
+                x: ['Year 1', 'Year 2', 'Year 3'],
+                y: [forecast.year1, forecast.year2, forecast.year3],
+                type: 'scatter',
+                mode: 'lines+markers',
+                line: {
+                    color: '#ec4899',
+                    width: 4,
+                    shape: 'spline'
+                },
+                marker: {
+                    size: 16,
+                    color: '#ec4899',
+                    line: { color: 'white', width: 3 }
+                },
+                fill: 'tozeroy',
+                fillcolor: 'rgba(236, 72, 153, 0.15)',
+                text: [forecast.year1.toString(), forecast.year2.toString(), forecast.year3.toString()],
+                textposition: 'top center',
+                textfont: { size: 14, color: '#831843', weight: 'bold' }
+            };
+
+            const layout = {
+                title: {
+                    text: `${inputs.program} - ${inputs.scenario} Scenario`,
+                    font: { size: 16, color: '#831843' }
+                },
+                xaxis: {
+                    title: 'Academic Year',
+                    gridcolor: '#fce7f3',
+                    linecolor: '#fbcfe8'
+                },
+                yaxis: {
+                    title: 'Enrollment (Students)',
+                    gridcolor: '#fce7f3',
+                    linecolor: '#fbcfe8'
+                },
+                plot_bgcolor: '#ffffff',
+                paper_bgcolor: '#ffffff',
+                margin: { t: 50, b: 50, l: 60, r: 40 }
+            };
+
+            Plotly.newPlot('enrollment-chart', [trace], layout, {responsive: true});
+        }
+
+        // ROI Chart
+        function renderROIChart(roi) {
+            const data = [{
+                values: [roi.revenue, roi.costs],
+                labels: ['Revenue', 'Costs'],
+                type: 'pie',
+                hole: 0.4,
+                marker: {
+                    colors: ['#ec4899', '#9ca3af']
+                },
+                textinfo: 'label+percent',
+                textposition: 'outside'
+            }];
+
+            const layout = {
+                title: {
+                    text: `ROI: ${roi.ratio.toFixed(2)}x | Net: $${(roi.revenue - roi.costs).toLocaleString()}`,
+                    font: { size: 14, color: '#831843' }
+                },
+                showlegend: false,
+                paper_bgcolor: '#ffffff',
+                annotations: [{
+                    text: `${roi.ratio.toFixed(2)}x`,
+                    x: 0.5,
+                    y: 0.5,
+                    font: { size: 24, color: roi.ratio >= 1 ? '#10b981' : '#ef4444', weight: 'bold' },
+                    showarrow: false
+                }]
+            };
+
+            Plotly.newPlot('roi-chart', data, layout, {responsive: true});
+        }
+
+        // Scenarios comparison chart
+        async function renderScenariosChart(inputs) {
+            try {
+                const response = await fetch('/api/scenarios', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(inputs)
+                });
+                const data = await response.json();
+
+                const scenarios = data.scenarios;
+                const trace = {
+                    x: scenarios.map(s => s.scenario),
+                    y: scenarios.map(s => s.year1),
+                    type: 'bar',
+                    marker: {
+                        color: ['#f59e0b', '#ec4899', '#10b981'],
+                        line: { color: '#831843', width: 2 }
+                    },
+                    text: scenarios.map(s => s.year1.toString()),
+                    textposition: 'outside'
+                };
+
+                const layout = {
+                    title: {
+                        text: 'Year 1 Enrollment by Scenario',
+                        font: { size: 14, color: '#831843' }
+                    },
+                    xaxis: { title: 'Scenario' },
+                    yaxis: { title: 'Students' },
+                    paper_bgcolor: '#ffffff',
+                    plot_bgcolor: '#ffffff'
+                };
+
+                Plotly.newPlot('scenario-chart', [trace], layout, {responsive: true});
+            } catch (e) {
+                console.error('Error loading scenarios:', e);
+            }
+        }
+
+        // States comparison chart
+        async function renderStatesChart(inputs) {
+            try {
+                const response = await fetch('/api/states', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(inputs)
+                });
+                const data = await response.json();
+
+                const states = data.states;
+                
+                const trace1 = {
+                    x: states.map(s => s.state),
+                    y: states.map(s => s.year1),
+                    name: 'Year 1',
+                    type: 'bar',
+                    marker: { color: '#ec4899' }
+                };
+
+                const trace2 = {
+                    x: states.map(s => s.state),
+                    y: states.map(s => s.year2),
+                    name: 'Year 2',
+                    type: 'bar',
+                    marker: { color: '#f472b6' }
+                };
+
+                const trace3 = {
+                    x: states.map(s => s.state),
+                    y: states.map(s => s.year3),
+                    name: 'Year 3',
+                    type: 'bar',
+                    marker: { color: '#fbcfe8' }
+                };
+
+                const layout = {
+                    title: {
+                        text: '3-Year Enrollment by State',
+                        font: { size: 14, color: '#831843' }
+                    },
+                    barmode: 'group',
+                    xaxis: { title: 'State' },
+                    yaxis: { title: 'Enrollment' },
+                    paper_bgcolor: '#ffffff',
+                    plot_bgcolor: '#ffffff',
+                    legend: { orientation: 'h', y: -0.2 }
+                };
+
+                Plotly.newPlot('state-chart', [trace1, trace2, trace3], layout, {responsive: true});
+            } catch (e) {
+                console.error('Error loading states:', e);
+            }
+        }
+    </script>
+</body>
+</html>

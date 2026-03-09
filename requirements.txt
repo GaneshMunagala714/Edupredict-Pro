@@ -1,5 +1,16 @@
-streamlit==1.31.0
+# EduPredict Pro - Flask Dependencies
+# No Streamlit - pure Flask + HTML/CSS/JS
+
+# Web Framework
+flask==3.0.0
+gunicorn==21.2.0
+
+# Data Processing
 pandas==2.1.4
 numpy==1.26.3
-plotly==5.18.0
+
+# PDF Generation (server-side)
 fpdf2==2.8.4
+
+# Production WSGI (for AWS EC2)
+gevent==23.9.1

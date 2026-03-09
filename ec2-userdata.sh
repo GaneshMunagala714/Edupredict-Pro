@@ -1,49 +1,88 @@
 #!/bin/bash
-# EduPredict Pro - EC2 User Data Script
-# Paste this into "User data" when launching an EC2 instance.
-# The app auto-deploys on boot. No SSH needed.
-# After ~3-5 minutes, visit http://<PUBLIC-IP>:8501
+# EduPredict Pro - Flask EC2 User Data Script
+# Deploys Flask app with Gunicorn on AWS EC2
+# Paste this into "User data" when launching EC2 instance
+# App will be live at http://<PUBLIC-IP> after ~3-5 minutes
 
 exec > /var/log/edupredict-deploy.log 2>&1
 set -e
 
-echo "=== EduPredict Pro Auto-Deploy ==="
+echo "=== EduPredict Pro Flask Auto-Deploy ==="
 echo "Started: $(date)"
 
+# Update system
+echo "📦 Updating system..."
 apt-get update -y
-apt-get install -y python3 python3-pip python3-venv git curl
+apt-get install -y python3 python3-pip python3-venv git curl nginx
 
+# Clone repository
+echo "📁 Cloning repository..."
 cd /home/ubuntu
 git clone https://github.com/GaneshMunagala714/Edupredict-Pro.git
 cd Edupredict-Pro
 
-python3 -m pip install --break-system-packages -r requirements.txt
+# Install dependencies
+echo "📚 Installing dependencies..."
+pip3 install --break-system-packages -r requirements.txt
 
-cat > /etc/systemd/system/edupredict.service <<SVCEOF
+# Create systemd service for Gunicorn
+echo "⚙️ Creating Gunicorn service..."
+cat > /etc/systemd/system/edupredict.service <<'EOF'
 [Unit]
-Description=EduPredict Pro Streamlit App
+Description=EduPredict Pro Flask App
 After=network.target
 
 [Service]
 Type=simple
 User=ubuntu
 WorkingDirectory=/home/ubuntu/Edupredict-Pro
-ExecStart=/usr/bin/python3 -m streamlit run ui/app.py --server.port 8501 --server.address 0.0.0.0 --server.headless true
+Environment="PATH=/usr/bin"
+ExecStart=/usr/bin/python3 -m gunicorn -w 2 -b 0.0.0.0:5000 app:app
 Restart=always
 RestartSec=5
-Environment=HOME=/home/ubuntu
 
 [Install]
 WantedBy=multi-user.target
-SVCEOF
+EOF
 
+# Set up Nginx as reverse proxy (optional but recommended)
+echo "🔧 Configuring Nginx..."
+cat > /etc/nginx/sites-available/edupredict <<'EOF'
+server {
+    listen 80;
+    server_name _;
+
+    location / {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+EOF
+
+# Enable Nginx config
+rm -f /etc/nginx/sites-enabled/default
+ln -sf /etc/nginx/sites-available/edupredict /etc/nginx/sites-enabled/
+
+# Set permissions
 chown -R ubuntu:ubuntu /home/ubuntu/Edupredict-Pro
 
+# Start services
+echo "🚀 Starting services..."
 systemctl daemon-reload
 systemctl enable edupredict
 systemctl start edupredict
+systemctl restart nginx
 
-PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4 2>/dev/null || echo "UNKNOWN")
-echo "=== Deploy Complete ==="
-echo "App URL: http://${PUBLIC_IP}:8501"
+# Get public IP
+PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4 2>/dev/null || echo "YOUR-INSTANCE-IP")
+
+echo ""
+echo "=== DEPLOYMENT COMPLETE ==="
+echo "App URL: http://${PUBLIC_IP}"
+echo "Health Check: http://${PUBLIC_IP}/health"
 echo "Finished: $(date)"
+echo ""
+echo "To check status: sudo systemctl status edupredict"
+echo "To view logs: sudo journalctl -u edupredict -f"
